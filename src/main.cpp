@@ -20,6 +20,7 @@ void traverse(QuadTree* q, SDL_Renderer* wRender) {
   if (q->body_ != nullptr) {
     SDL_SetRenderDrawColor(wRender, 0, 255, 30, 130);
     q->body_->draw(wRender, 700.0);
+    q->body_->update();
   }
   traverse((q->NE).get(), wRender);
   traverse((q->NW).get(), wRender);
@@ -44,16 +45,19 @@ int main() {
 
     bool quit = false;
     SDL_Event e;
-    traverse(&tree, wRender);
-    SDL_RenderPresent(wRender);
 
     while (!quit) {
+      traverse(&tree, wRender);
+      SDL_RenderPresent(wRender);
       while (SDL_PollEvent(&e)) {
         if (e.type == SDL_QUIT) {
           quit = true;
         }
-        SDL_Delay(16);
       }
+      SDL_Delay(16);
+      SDL_SetRenderDrawColor(wRender, 0, 0, 0, 0);
+      SDL_RenderClear(wRender);
     }
+    std::cout << "HERE" << std::endl;
   }
 }

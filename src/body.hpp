@@ -28,7 +28,8 @@ struct Body {
   }
 
   inline void update(){
-
+    pos[0] += vel[0] * 0.001;
+    pos[1] += vel[1] * 0.001;
   }
 
   double pos[2];
