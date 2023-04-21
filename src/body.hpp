@@ -1,8 +1,8 @@
 #pragma once
-#include <SDL2/SDL.h>
 #include <memory>
 #include <ostream>
 #include <random>
+#include <SDL2/SDL.h>
 
 struct Body {
   Body() {}
@@ -22,12 +22,10 @@ struct Body {
     r.h = 2;
     SDL_RenderFillRect(wRender, &r);
   }
-  
-  inline void updateForce(){
 
-  }
+  inline void updateForce() {}
 
-  inline void update(){
+  inline void update() {
     pos[0] += vel[0] * 0.001;
     pos[1] += vel[1] * 0.001;
   }
@@ -54,4 +52,16 @@ inline std::unique_ptr<Body> generatePoint(const double x,
   std::normal_distribution<> yDist{y, stdev};
   std::normal_distribution<> vel{0, 1000};
   return std::make_unique<Body>(xDist(gen), yDist(gen), vel(gen), vel(gen));
+}
+
+inline Body generatePointReg(const double x,
+                             const double y,
+                             const double stdev) {
+  std::random_device rd{};
+  std::mt19937 gen{rd()};
+
+  std::normal_distribution<> xDist{x, stdev};
+  std::normal_distribution<> yDist{y, stdev};
+  std::normal_distribution<> vel{0, 1000};
+  return Body(xDist(gen), yDist(gen), vel(gen), vel(gen));
 }

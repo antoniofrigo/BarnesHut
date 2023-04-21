@@ -4,19 +4,22 @@
 #include <algorithm>
 #include <array>
 #include <memory>
+#include <iostream>
 
 struct QuadTree {
   QuadTree(const Quad& quad)
       : quad_(quad),
+        body_(nullptr),
         isLeaf_(true),
         cm(std::make_pair(0.0, 0.0)),
-        totalMass(0.0) {}
+        totalMass(0.0) {
+  }
 
   bool isValid(const Body& body);
-  bool insert(const std::unique_ptr<Body> body);
+  bool insert(Body* body);
 
-  std::unique_ptr<Body> body_;
   Quad quad_;
+  Body* body_;
   bool isLeaf_;
   std::pair<double, double> cm;
   double totalMass;

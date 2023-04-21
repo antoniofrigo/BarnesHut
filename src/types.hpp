@@ -24,7 +24,7 @@ struct Quad {
     dimension = dimension_;
   }
 
-  inline void draw(SDL_Renderer* wRender, const double maxDim) {
+  inline void draw(SDL_Renderer* wRender, const double maxDim) const {
     for(int i = 0; i < 4; ++i){
       const auto& d1 = DIRECTIONS[i];
       const auto& d2 = DIRECTIONS[(i + 1) % 4];
@@ -36,12 +36,12 @@ struct Quad {
     }
   }
 
-  inline bool isWithinQuad(const Body& body) {
+  inline bool isWithinQuad(const Body& body) const {
     return (abs(body.pos[0] - center.first) <= dimension) &&
            (abs(body.pos[1] - center.second) <= dimension);
   }
 
-  inline Quad getQuad(const Quadrant& q) {
+  inline Quad getQuad(const Quadrant& q) const {
     switch (q) {
     case Quadrant::NE:
       return Quad(center.first + dimension / 2,

@@ -30,9 +30,9 @@ void traverse(QuadTree* q, SDL_Renderer* wRender) {
 
 int main() {
   auto quad = Quad(0, 0, 300.0);
-  auto tree = QuadTree(quad);
-  for (int i = 0; i < 1000; ++i) {
-    tree.insert(generatePoint(0, 0, 50));
+  auto points = std::vector<Body>(10000);
+  for(auto& p: points){
+    p = generatePointReg(0,0,50);
   }
 
   if (SDL_Init(SDL_INIT_VIDEO) < 0) {
@@ -42,11 +42,14 @@ int main() {
                                      SDL_WINDOWPOS_CENTERED, SCREEN_WIDTH,
                                      SCREEN_HEIGHT, SDL_WINDOW_SHOWN);
     auto wRender = SDL_CreateRenderer(w_window, -1, SDL_RENDERER_SOFTWARE);
-
     bool quit = false;
     SDL_Event e;
 
     while (!quit) {
+      auto tree = QuadTree(quad);
+      for (auto& p: points){
+        tree.insert(&p);
+      }
       traverse(&tree, wRender);
       SDL_RenderPresent(wRender);
       while (SDL_PollEvent(&e)) {
@@ -58,6 +61,5 @@ int main() {
       SDL_SetRenderDrawColor(wRender, 0, 0, 0, 0);
       SDL_RenderClear(wRender);
     }
-    std::cout << "HERE" << std::endl;
   }
 }
