@@ -1,4 +1,5 @@
 #pragma once
+#include <SDL2/SDL.h>
 #include <memory>
 #include <ostream>
 #include <random>
@@ -10,10 +11,30 @@ struct Body {
     pos[1] = y;
     vel[0] = dx;
     vel[1] = dy;
+    mass = 1.0;
   }
+
+  inline void draw(SDL_Renderer* wRender, const double maxDim) const {
+    SDL_Rect r;
+    r.x = maxDim / 2 + pos[0] - 1;
+    r.y = maxDim / 2 + pos[1] - 1;
+    r.w = 2;
+    r.h = 2;
+    SDL_RenderFillRect(wRender, &r);
+  }
+  
+  inline void updateForce(){
+
+  }
+
+  inline void update(){
+
+  }
+
   double pos[2];
   double vel[2];
   double force[2];
+  double mass;
 };
 
 inline std::ostream& operator<<(std::ostream& os, const Body& point) {
