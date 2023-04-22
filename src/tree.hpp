@@ -13,21 +13,23 @@ struct Tree {
         body_(nullptr),
         isLeaf_(true),
         cm(0.0, 0.0),
-        totalMass(0.0) {}
+        totalMass(0.0),
+        count(0) {}
 
   bool isValid(const Body& body);
   bool insert(Body* body);
+  
+  void getCMWithoutBody(const Body& body);
+  void updateAndRenderChildren(SDL_Renderer* wRender);
 
   Quad quad_;
   Body* body_;
   bool isLeaf_;
   Vec<double> cm;
   double totalMass;
+  int count;
 
-  std::unique_ptr<Tree> NE;
-  std::unique_ptr<Tree> NW;
-  std::unique_ptr<Tree> SW;
-  std::unique_ptr<Tree> SE;
+  std::vector<std::unique_ptr<Tree>> children_;
 };
 
 inline std::ostream& operator<<(std::ostream& os, const Tree& tree) {

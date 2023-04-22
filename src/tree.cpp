@@ -5,10 +5,26 @@
 
 bool Tree::isValid(const Body& body) { return quad_.isWithinQuad(body); }
 
+
+void Tree::updateAndRenderChildren(SDL_Renderer* wRender){
+  SDL_SetRenderDrawColor(wRender, 0, 120, 255, 30);
+  quad_.draw(wRender, 700.0);
+  if (body_ != nullptr) {
+    SDL_SetRenderDrawColor(wRender, 0, 255, 30, 130);
+    body_->update();
+    body_->draw(wRender, 700.0);
+  }
+
+  for (auto&& child : children_){
+    child->updateAndRenderChildren(wRender);
+  }
+}
+
 bool Tree::insert(Body* body) {
   if (!isValid(*body)) {
     return false;
   }
+  count += 1;
   body->halfWidth = quad_.dimension;
 
   cm = cm * totalMass + body->pos * body->mass;
@@ -22,47 +38,32 @@ bool Tree::insert(Body* body) {
   }
 
   // Create the children if they don't exist
-  if (isLeaf_) {
-    if (NE == nullptr) {
-      NE = std::make_unique<Tree>(quad_.getQuad(Quadrant::NE));
-    }
-    if (NW == nullptr) {
-      NW = std::make_unique<Tree>(quad_.getQuad(Quadrant::NW));
-    }
-    if (SW == nullptr) {
-      SW = std::make_unique<Tree>(quad_.getQuad(Quadrant::SW));
-    }
-    if (SE == nullptr) {
-      SE = std::make_unique<Tree>(quad_.getQuad(Quadrant::SE));
-    }
+  if (isLeaf_ && children_.size() == 0) {
+    children_.emplace_back(std::make_unique<Tree>(quad_.getQuad(Quadrant::NE)));
+    children_.emplace_back(std::make_unique<Tree>(quad_.getQuad(Quadrant::NW)));
+    children_.emplace_back(std::make_unique<Tree>(quad_.getQuad(Quadrant::SW)));
+    children_.emplace_back(std::make_unique<Tree>(quad_.getQuad(Quadrant::SE)));
   }
   isLeaf_ = false;
 
   // Place old body if needed
-  bool result = true;
+  bool oldResult = false;
   if (body_ != nullptr) {
-    if (NE->isValid(*body_)) {
-      result &= NE->insert(body_);
-    } else if (NW->isValid(*body_)) {
-      result &= NW->insert(body_);
-    } else if (SW->isValid(*body_)) {
-      result &= SW->insert(body_);
-    } else if (SE->isValid(*body_)) {
-      result &= SE->insert(body_);
+    for(auto& child: children_){
+      if (child->isValid(*body_)){
+        oldResult |= child->insert(body_);
+      }
     }
     body_ = nullptr;
   }
 
   // Place new one
-  if (NE->isValid(*body)) {
-    result &= NE->insert(body);
-  } else if (NW->isValid(*body)) {
-    result &= NW->insert(body);
-  } else if (SW->isValid(*body)) {
-    result &= SW->insert(body);
-  } else if (SE->isValid(*body)) {
-    result &= SE->insert(body);
+  bool newResult = false;
+  for(auto& child: children_){
+    if (child->isValid(*body)){
+      newResult |= child->insert(body);
+    }
   }
 
-  return result;
+  return oldResult & newResult;
 }

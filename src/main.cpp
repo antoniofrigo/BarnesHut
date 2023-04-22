@@ -10,7 +10,7 @@
 
 constexpr int SCREEN_WIDTH = 700;
 constexpr int SCREEN_HEIGHT = 700;
-constexpr double THETA = 0.4;
+constexpr double THETA = 0.0;
 constexpr double G = 100000;
 
 void traverseForces(Tree* q, Body* body){
@@ -30,29 +30,10 @@ void traverseForces(Tree* q, Body* body){
     body->acc[0] += a * cos_theta;
     body->acc[1] += a * sin_theta;
   } else {
-    traverseForces(q->NE.get(), body);
-    traverseForces(q->NW.get(), body);
-    traverseForces(q->SW.get(), body);
-    traverseForces(q->SE.get(), body);
+    for (auto&& child : q->children_){
+      traverseForces(child.get(), body);
+    }
   }
-}
-
-void traverse(Tree* q, SDL_Renderer* wRender) {
-  if (q == nullptr) {
-    return;
-  }
-
-  SDL_SetRenderDrawColor(wRender, 0, 120, 255, 30);
-  q->quad_.draw(wRender, 700.0);
-  if (q->body_ != nullptr) {
-    SDL_SetRenderDrawColor(wRender, 0, 255, 30, 130);
-    q->body_->update();
-    q->body_->draw(wRender, 700.0);
-  }
-  traverse((q->NE).get(), wRender);
-  traverse((q->NW).get(), wRender);
-  traverse((q->SW).get(), wRender);
-  traverse((q->SE).get(), wRender);
 }
 
 int main() {
@@ -77,11 +58,12 @@ int main() {
       for (auto& p: points){
         tree.insert(&p);
       }
+      std::cout << tree.cm  << " " << tree.count << std::endl;
       for (auto& p: points){
         p.resetAcc();
         traverseForces(&tree, &p);
       }
-      traverse(&tree, wRender);
+      tree.updateAndRenderChildren(wRender);
       SDL_RenderPresent(wRender);
       while (SDL_PollEvent(&e)) {
         if (e.type == SDL_QUIT) {
