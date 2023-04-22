@@ -11,11 +11,9 @@ bool Tree::insert(Body* body) {
   }
   body->halfWidth = quad_.dimension;
 
-  cm.first = cm.first * totalMass + body->pos[0] * body->mass;
-  cm.second = cm.second * totalMass + body->pos[1] * body->mass;
+  cm = cm * totalMass + body->pos * body->mass;
   totalMass += body->mass;
-  cm.first /= totalMass;
-  cm.second /= totalMass;
+  cm = cm / totalMass;
 
   // Set body to be the
   if (body_ == nullptr && isLeaf_) {

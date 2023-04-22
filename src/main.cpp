@@ -21,12 +21,12 @@ void traverseForces(Tree* q, Body* body){
     return;
   }
   
-  auto rSq = pow((body->pos[0] - q->cm.first),2) + pow(body->pos[1] - q->cm.second, 2) + 0.001;
+  auto rSq = pow((body->pos[0] - q->cm[0]),2) + pow(body->pos[1] - q->cm[1], 2) + 0.001;
   auto thetaSq = 4 * pow(body->halfWidth,2)/rSq;
   if (thetaSq <= THETA * THETA || (q->isLeaf_ && q->body_ != nullptr)) {
     auto a = G * body->mass/rSq;
-    auto cos_theta = (q->cm.first - body->pos[0])/(sqrt(rSq));
-    auto sin_theta = (q->cm.second - body->pos[1])/(sqrt(rSq));
+    auto cos_theta = (q->cm[0] - body->pos[0])/(sqrt(rSq));
+    auto sin_theta = (q->cm[1] - body->pos[1])/(sqrt(rSq));
     body->acc[0] += a * cos_theta;
     body->acc[1] += a * sin_theta;
   } else {

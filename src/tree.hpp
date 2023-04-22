@@ -1,6 +1,7 @@
 #pragma once
 #include "body.hpp"
 #include "types.hpp"
+#include "vec.hpp"
 #include <algorithm>
 #include <array>
 #include <memory>
@@ -11,9 +12,8 @@ struct Tree {
       : quad_(quad),
         body_(nullptr),
         isLeaf_(true),
-        cm(std::make_pair(0.0, 0.0)),
-        totalMass(0.0) {
-  }
+        cm(0.0, 0.0),
+        totalMass(0.0) {}
 
   bool isValid(const Body& body);
   bool insert(Body* body);
@@ -21,7 +21,7 @@ struct Tree {
   Quad quad_;
   Body* body_;
   bool isLeaf_;
-  std::pair<double, double> cm;
+  Vec<double> cm;
   double totalMass;
 
   std::unique_ptr<Tree> NE;
@@ -30,8 +30,8 @@ struct Tree {
   std::unique_ptr<Tree> SE;
 };
 
-inline std::ostream& operator<<(std::ostream& os, const Tree& tree){
-  os << "CM = " << tree.cm.first << " " << tree.cm.second << " ";
+inline std::ostream& operator<<(std::ostream& os, const Tree& tree) {
+  os << "CM = " << tree.cm << " ";
   os << "MASS = " << tree.totalMass;
   return os;
 }
