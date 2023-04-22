@@ -4,10 +4,10 @@
 #include <algorithm>
 #include <array>
 #include <memory>
-#include <iostream>
+#include <ostream>
 
-struct QuadTree {
-  QuadTree(const Quad& quad)
+struct Tree {
+  Tree(const Quad& quad)
       : quad_(quad),
         body_(nullptr),
         isLeaf_(true),
@@ -24,8 +24,14 @@ struct QuadTree {
   std::pair<double, double> cm;
   double totalMass;
 
-  std::unique_ptr<QuadTree> NE;
-  std::unique_ptr<QuadTree> NW;
-  std::unique_ptr<QuadTree> SW;
-  std::unique_ptr<QuadTree> SE;
+  std::unique_ptr<Tree> NE;
+  std::unique_ptr<Tree> NW;
+  std::unique_ptr<Tree> SW;
+  std::unique_ptr<Tree> SE;
 };
+
+inline std::ostream& operator<<(std::ostream& os, const Tree& tree){
+  os << "CM = " << tree.cm.first << " " << tree.cm.second << " ";
+  os << "MASS = " << tree.totalMass;
+  return os;
+}

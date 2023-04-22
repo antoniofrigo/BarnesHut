@@ -3,12 +3,13 @@
 #include <iostream>
 #include <memory>
 
-bool QuadTree::isValid(const Body& body) { return quad_.isWithinQuad(body); }
+bool Tree::isValid(const Body& body) { return quad_.isWithinQuad(body); }
 
-bool QuadTree::insert(Body* body) {
+bool Tree::insert(Body* body) {
   if (!isValid(*body)) {
     return false;
   }
+  body->halfWidth = quad_.dimension;
 
   cm.first = cm.first * totalMass + body->pos[0] * body->mass;
   cm.second = cm.second * totalMass + body->pos[1] * body->mass;
@@ -25,16 +26,16 @@ bool QuadTree::insert(Body* body) {
   // Create the children if they don't exist
   if (isLeaf_) {
     if (NE == nullptr) {
-      NE = std::make_unique<QuadTree>(quad_.getQuad(Quadrant::NE));
+      NE = std::make_unique<Tree>(quad_.getQuad(Quadrant::NE));
     }
     if (NW == nullptr) {
-      NW = std::make_unique<QuadTree>(quad_.getQuad(Quadrant::NW));
+      NW = std::make_unique<Tree>(quad_.getQuad(Quadrant::NW));
     }
     if (SW == nullptr) {
-      SW = std::make_unique<QuadTree>(quad_.getQuad(Quadrant::SW));
+      SW = std::make_unique<Tree>(quad_.getQuad(Quadrant::SW));
     }
     if (SE == nullptr) {
-      SE = std::make_unique<QuadTree>(quad_.getQuad(Quadrant::SE));
+      SE = std::make_unique<Tree>(quad_.getQuad(Quadrant::SE));
     }
   }
   isLeaf_ = false;

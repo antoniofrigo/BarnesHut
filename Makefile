@@ -1,6 +1,6 @@
 # tool macros
 CXX := g++
-CXXFLAGS := -std=c++17 -Wall -Wextra -fsanitize=address -fno-omit-frame-pointer -O1 -I/opt/homebrew/include -D_THREAD_SAFE -L/opt/homebrew/lib -lSDL2 
+CXXFLAGS := -std=c++17 -Wall -Wextra -fsanitize=address -fno-omit-frame-pointer -O3 -I/opt/homebrew/include -D_THREAD_SAFE -L/opt/homebrew/lib -lSDL2 
 COBJFLAGS := $(CXXFLAGS) -c
 
 # path macros

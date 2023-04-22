@@ -11,6 +11,8 @@ struct Body {
     pos[1] = y;
     vel[0] = dx;
     vel[1] = dy;
+    acc[0] = 0.0;
+    acc[1] = 0.0;
     mass = 1.0;
   }
 
@@ -23,22 +25,29 @@ struct Body {
     SDL_RenderFillRect(wRender, &r);
   }
 
-  inline void updateForce() {}
-
   inline void update() {
     pos[0] += vel[0] * 0.001;
     pos[1] += vel[1] * 0.001;
+    vel[0] += acc[0] * 0.001;
+    vel[1] += acc[1] * 0.001;
+  }
+  
+  inline void resetAcc() {
+    acc[0] = 0.0;
+    acc[1] = 0.0;
   }
 
   double pos[2];
   double vel[2];
-  double force[2];
+  double acc[2];
   double mass;
+  double halfWidth;
 };
 
 inline std::ostream& operator<<(std::ostream& os, const Body& point) {
   os << "Pos = {" << point.pos[0] << ", " << point.pos[1] << "}, ";
-  os << "Vel = {" << point.vel[0] << ", " << point.vel[1] << "}";
+  os << "Vel = {" << point.vel[0] << ", " << point.vel[1] << "}, ";
+  os << "Acc = {" << point.acc[0] << ", " << point.acc[1] << "}";
   return os;
 }
 
@@ -51,7 +60,7 @@ inline std::unique_ptr<Body> generatePoint(const double x,
   std::normal_distribution<> xDist{x, stdev};
   std::normal_distribution<> yDist{y, stdev};
   std::normal_distribution<> vel{0, 1000};
-  return std::make_unique<Body>(xDist(gen), yDist(gen), vel(gen), vel(gen));
+  return std::make_unique<Body>(xDist(gen), yDist(gen), 0, 0);
 }
 
 inline Body generatePointReg(const double x,
@@ -62,6 +71,6 @@ inline Body generatePointReg(const double x,
 
   std::normal_distribution<> xDist{x, stdev};
   std::normal_distribution<> yDist{y, stdev};
-  std::normal_distribution<> vel{0, 1000};
-  return Body(xDist(gen), yDist(gen), vel(gen), vel(gen));
+  std::normal_distribution<> vel{0, 100};
+  return Body(xDist(gen), yDist(gen), 0, 0);
 }
