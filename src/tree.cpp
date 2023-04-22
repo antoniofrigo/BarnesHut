@@ -5,8 +5,7 @@
 
 bool Tree::isValid(const Body& body) { return quad_.isWithinQuad(body); }
 
-
-void Tree::updateAndRenderChildren(SDL_Renderer* wRender){
+void Tree::updateAndRenderChildren(SDL_Renderer* wRender) {
   SDL_SetRenderDrawColor(wRender, 0, 120, 255, 30);
   quad_.draw(wRender, 700.0);
   if (body_ != nullptr) {
@@ -15,7 +14,7 @@ void Tree::updateAndRenderChildren(SDL_Renderer* wRender){
     body_->draw(wRender, 700.0);
   }
 
-  for (auto&& child : children_){
+  for (auto&& child : children_) {
     child->updateAndRenderChildren(wRender);
   }
 }
@@ -49,8 +48,8 @@ bool Tree::insert(Body* body) {
   // Place old body if needed
   bool oldResult = false;
   if (body_ != nullptr) {
-    for(auto& child: children_){
-      if (child->isValid(*body_)){
+    for (auto& child : children_) {
+      if (child->isValid(*body_)) {
         oldResult |= child->insert(body_);
       }
     }
@@ -59,8 +58,8 @@ bool Tree::insert(Body* body) {
 
   // Place new one
   bool newResult = false;
-  for(auto& child: children_){
-    if (child->isValid(*body)){
+  for (auto& child : children_) {
+    if (child->isValid(*body)) {
       newResult |= child->insert(body);
     }
   }

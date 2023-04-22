@@ -15,15 +15,12 @@ struct Vec {
     data[0] = x;
     data[1] = y;
   }
-  
-  inline const T_DATA& operator[](const int& index) const{
+
+  inline const T_DATA& operator[](const int& index) const {
     return data[index];
   }
 
-  inline T_DATA& operator[](const int& index) {
-    return data[index];
-  }
-
+  inline T_DATA& operator[](const int& index) { return data[index]; }
 
   inline Vec& operator+=(const Vec& other) {
     data[0] += other.data[0];
@@ -39,7 +36,6 @@ struct Vec {
     return *this;
   }
 
-
   inline Vec operator*(const Vec& other) {
     return Vec(data[0] * other.data[0],
                data[1] * other.data[1],
@@ -48,21 +44,16 @@ struct Vec {
 
   template <typename T_SCALAR>
   inline Vec operator*(const T_SCALAR& scalar) {
-    return Vec(data[0] * scalar,
-               data[1] * scalar,
-               data[2] * scalar);
+    return Vec(data[0] * scalar, data[1] * scalar, data[2] * scalar);
   }
 
   template <typename T_SCALAR>
   inline Vec operator/(const T_SCALAR& scalar) {
-    return Vec(data[0] / scalar,
-               data[1] / scalar,
-               data[2] / scalar);
+    return Vec(data[0] / scalar, data[1] / scalar, data[2] / scalar);
   }
 
   T_DATA data[3];
 };
-
 
 template <class T_DATA>
 inline Vec<T_DATA> operator+(Vec<T_DATA> lhs, const Vec<T_DATA>& other) {
@@ -77,7 +68,7 @@ inline Vec<T_DATA> operator-(Vec<T_DATA> lhs, const Vec<T_DATA>& other) {
 }
 
 template <class T_DATA>
-std::ostream& operator<<(std::ostream& os, const Vec<T_DATA>& vec){
-  os << "{ " << vec[0] << ", " << vec[1] <<", " << vec[2] << "}";
+std::ostream& operator<<(std::ostream& os, const Vec<T_DATA>& vec) {
+  os << "{ " << vec[0] << ", " << vec[1] << ", " << vec[2] << "}";
   return os;
 }

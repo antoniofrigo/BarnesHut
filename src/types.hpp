@@ -8,7 +8,6 @@
 #include <memory>
 #include <vector>
 
-
 enum class Quadrant {
   NE,
   NW,
@@ -22,7 +21,7 @@ const auto DIRECTIONS =
 
 struct Quad {
   Quad(const double& x, const double& y, const double& dimension_) {
-    center = Vec<double>(x,y);
+    center = Vec<double>(x, y);
     dimension = dimension_;
   }
 
@@ -46,28 +45,24 @@ struct Quad {
   inline Quad getQuad(const Quadrant& q) const {
     switch (q) {
     case Quadrant::NE:
-      return Quad(center[0] + dimension / 2,
-                  center[1] + dimension / 2,
-                  dimension / 2);
+      return Quad(
+          center[0] + dimension / 2, center[1] + dimension / 2, dimension / 2);
     case Quadrant::NW:
-      return Quad(center[0] - dimension / 2,
-                  center[1] + dimension / 2,
-                  dimension / 2);
+      return Quad(
+          center[0] - dimension / 2, center[1] + dimension / 2, dimension / 2);
     case Quadrant::SW:
-      return Quad(center[0] - dimension / 2,
-                  center[1] - dimension / 2,
-                  dimension / 2);
+      return Quad(
+          center[0] - dimension / 2, center[1] - dimension / 2, dimension / 2);
     case Quadrant::SE:
-      return Quad(center[0] + dimension / 2,
-                  center[1] - dimension / 2,
-                  dimension / 2);
+      return Quad(
+          center[0] + dimension / 2, center[1] - dimension / 2, dimension / 2);
     default:
       break;
     }
     // Should never run
     return Quad(0, 0, 0);
   }
-  
+
   Vec<double> center;
   // std::pair<double, double> center;
   double dimension;

@@ -3,9 +3,9 @@
 #include "types.hpp"
 #include <SDL2/SDL.h>
 #include <algorithm>
+#include <cmath>
 #include <iostream>
 #include <memory>
-#include <cmath>
 #include <vector>
 
 constexpr int SCREEN_WIDTH = 700;
@@ -13,24 +13,25 @@ constexpr int SCREEN_HEIGHT = 700;
 constexpr double THETA = 0.0;
 constexpr double G = 100000;
 
-void traverseForces(Tree* q, Body* body){
+void traverseForces(Tree* q, Body* body) {
   if (q == nullptr) {
     return;
   }
   if (body == q->body_) {
     return;
   }
-  
-  auto rSq = pow((body->pos[0] - q->cm[0]),2) + pow(body->pos[1] - q->cm[1], 2) + 0.001;
-  auto thetaSq = 4 * pow(body->halfWidth,2)/rSq;
+
+  auto rSq = pow((body->pos[0] - q->cm[0]), 2) +
+             pow(body->pos[1] - q->cm[1], 2) + 0.001;
+  auto thetaSq = 4 * pow(body->halfWidth, 2) / rSq;
   if (thetaSq <= THETA * THETA || (q->isLeaf_ && q->body_ != nullptr)) {
-    auto a = G * body->mass/rSq;
-    auto cos_theta = (q->cm[0] - body->pos[0])/(sqrt(rSq));
-    auto sin_theta = (q->cm[1] - body->pos[1])/(sqrt(rSq));
+    auto a = G * body->mass / rSq;
+    auto cos_theta = (q->cm[0] - body->pos[0]) / (sqrt(rSq));
+    auto sin_theta = (q->cm[1] - body->pos[1]) / (sqrt(rSq));
     body->acc[0] += a * cos_theta;
     body->acc[1] += a * sin_theta;
   } else {
-    for (auto&& child : q->children_){
+    for (auto&& child : q->children_) {
       traverseForces(child.get(), body);
     }
   }
@@ -39,8 +40,8 @@ void traverseForces(Tree* q, Body* body){
 int main() {
   auto quad = Quad(0, 0, 300.0);
   auto points = std::vector<Body>(100);
-  for(auto& p: points){
-    p = generatePointReg(0,0,50);
+  for (auto& p : points) {
+    p = generatePointReg(0, 0, 50);
   }
 
   if (SDL_Init(SDL_INIT_VIDEO) < 0) {
@@ -55,11 +56,11 @@ int main() {
 
     while (!quit) {
       auto tree = Tree(quad);
-      for (auto& p: points){
+      for (auto& p : points) {
         tree.insert(&p);
       }
-      std::cout << tree.cm  << " " << tree.count << std::endl;
-      for (auto& p: points){
+      std::cout << tree.cm << " " << tree.count << std::endl;
+      for (auto& p : points) {
         p.resetAcc();
         traverseForces(&tree, &p);
       }

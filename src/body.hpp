@@ -43,18 +43,6 @@ inline std::ostream& operator<<(std::ostream& os, const Body& point) {
   return os;
 }
 
-inline std::unique_ptr<Body> generatePoint(const double x,
-                                           const double y,
-                                           const double stdev) {
-  std::random_device rd{};
-  std::mt19937 gen{rd()};
-
-  std::normal_distribution<> xDist{x, stdev};
-  std::normal_distribution<> yDist{y, stdev};
-  std::normal_distribution<> vel{0, 1000};
-  return std::make_unique<Body>(xDist(gen), yDist(gen), 0, 0);
-}
-
 inline Body generatePointReg(const double x,
                              const double y,
                              const double stdev) {
