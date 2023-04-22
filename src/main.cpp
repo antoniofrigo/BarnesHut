@@ -3,6 +3,7 @@
 #include "types.hpp"
 #include <SDL2/SDL.h>
 #include <algorithm>
+#include <chrono>
 #include <cmath>
 #include <iostream>
 #include <memory>
@@ -23,9 +24,9 @@ void traverseForces(Tree* q, Body* body) {
 
   const auto x = q->cm[0] - body->pos[0];
   const auto y = q->cm[1] - body->pos[1];
-  const auto r = sqrt(x * x + y * y) + 0.01;
+  const auto r = std::max(sqrt(x * x + y * y), 0.1);
   const auto theta = 2 * q->quad_.dimension / r;
-  if (theta <= THETA  || (q->isLeaf_ && q->body_ != nullptr)) {
+  if (theta <= THETA || (q->isLeaf_ && q->body_ != nullptr)) {
     const auto a = G * q->totalMass / (r * r);
     const auto cos_theta = x / r;
     const auto sin_theta = y / r;
@@ -40,7 +41,7 @@ void traverseForces(Tree* q, Body* body) {
 
 int main() {
   auto quad = Quad(0, 0, 300.0);
-  auto bodies = std::vector<Body>(2);
+  auto bodies = std::vector<Body>(10000);
   for (auto& p : bodies) {
     p = generatePointReg(0, 0, 50);
   }
@@ -56,6 +57,7 @@ int main() {
     SDL_Event e;
 
     while (!quit) {
+      const auto start = std::chrono::system_clock::now();
       auto tree = Tree(quad);
       for (auto& p : bodies) {
         tree.insert(&p);
@@ -65,6 +67,12 @@ int main() {
         p.resetAcc();
         traverseForces(&tree, &p);
       }
+      const auto end = std::chrono::system_clock::now();
+      std::cout
+          << std::chrono::duration_cast<std::chrono::milliseconds>(end - start)
+                 .count()
+          << " ms per loop (excluding rendering)"
+          << "\r" << std::flush;
       tree.updateAndRenderChildren(wRender);
       SDL_RenderPresent(wRender);
       while (SDL_PollEvent(&e)) {
