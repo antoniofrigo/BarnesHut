@@ -30,7 +30,7 @@ bool Tree::insert(Body* body) {
   totalMass += body->mass;
   cm = cm / totalMass;
 
-  // Set body to be the
+  // Keep the node as a leaf and add the body
   if (body_ == nullptr && isLeaf_) {
     body_ = body;
     return true;

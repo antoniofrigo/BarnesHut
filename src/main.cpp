@@ -10,8 +10,8 @@
 
 constexpr int SCREEN_WIDTH = 700;
 constexpr int SCREEN_HEIGHT = 700;
-constexpr double THETA = 0.0;
-constexpr double G = 100000;
+constexpr double THETA = 1;
+constexpr double G = 10000;
 
 void traverseForces(Tree* q, Body* body) {
   if (q == nullptr) {
@@ -21,13 +21,14 @@ void traverseForces(Tree* q, Body* body) {
     return;
   }
 
-  auto rSq = pow((body->pos[0] - q->cm[0]), 2) +
-             pow(body->pos[1] - q->cm[1], 2) + 0.001;
-  auto thetaSq = 4 * pow(body->halfWidth, 2) / rSq;
-  if (thetaSq <= THETA * THETA || (q->isLeaf_ && q->body_ != nullptr)) {
-    auto a = G * body->mass / rSq;
-    auto cos_theta = (q->cm[0] - body->pos[0]) / (sqrt(rSq));
-    auto sin_theta = (q->cm[1] - body->pos[1]) / (sqrt(rSq));
+  const auto x = q->cm[0] - body->pos[0];
+  const auto y = q->cm[1] - body->pos[1];
+  const auto r = sqrt(x * x + y * y) + 0.01;
+  const auto theta = 2 * q->quad_.dimension / r;
+  if (theta <= THETA  || (q->isLeaf_ && q->body_ != nullptr)) {
+    const auto a = G * q->totalMass / (r * r);
+    const auto cos_theta = x / r;
+    const auto sin_theta = y / r;
     body->acc[0] += a * cos_theta;
     body->acc[1] += a * sin_theta;
   } else {
@@ -39,8 +40,8 @@ void traverseForces(Tree* q, Body* body) {
 
 int main() {
   auto quad = Quad(0, 0, 300.0);
-  auto points = std::vector<Body>(100);
-  for (auto& p : points) {
+  auto bodies = std::vector<Body>(2);
+  for (auto& p : bodies) {
     p = generatePointReg(0, 0, 50);
   }
 
@@ -56,11 +57,11 @@ int main() {
 
     while (!quit) {
       auto tree = Tree(quad);
-      for (auto& p : points) {
+      for (auto& p : bodies) {
         tree.insert(&p);
       }
-      std::cout << tree.cm << " " << tree.count << std::endl;
-      for (auto& p : points) {
+
+      for (auto& p : bodies) {
         p.resetAcc();
         traverseForces(&tree, &p);
       }
