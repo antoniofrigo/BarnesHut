@@ -5,6 +5,7 @@
 #include <algorithm>
 #include <chrono>
 #include <cmath>
+#include <fstream>
 #include <iostream>
 #include <memory>
 #include <vector>
@@ -12,7 +13,7 @@
 constexpr int SCREEN_WIDTH = 700;
 constexpr int SCREEN_HEIGHT = 700;
 constexpr double THETA = 1;
-constexpr double G = 10000;
+constexpr double G = 1;
 
 void traverseForces(Tree* q, Body* body) {
   if (q == nullptr) {
@@ -24,7 +25,7 @@ void traverseForces(Tree* q, Body* body) {
 
   const auto x = q->cm[0] - body->pos[0];
   const auto y = q->cm[1] - body->pos[1];
-  const auto r = std::max(sqrt(x * x + y * y), 0.1);
+  const auto r = std::max(sqrt(x * x + y * y), 1.0);
   const auto theta = 2 * q->quad_.dimension / r;
   if (theta <= THETA || (q->isLeaf_ && q->body_ != nullptr)) {
     const auto a = G * q->totalMass / (r * r);
@@ -41,10 +42,7 @@ void traverseForces(Tree* q, Body* body) {
 
 int main() {
   auto quad = Quad(0, 0, 300.0);
-  auto bodies = std::vector<Body>(10000);
-  for (auto& p : bodies) {
-    p = generatePointReg(0, 0, 50);
-  }
+  auto bodies = generateRotatingDisk(10000);
 
   if (SDL_Init(SDL_INIT_VIDEO) < 0) {
     std::cout << "SDL not working..." << SDL_GetError() << std::endl;
@@ -68,11 +66,11 @@ int main() {
         traverseForces(&tree, &p);
       }
       const auto end = std::chrono::system_clock::now();
-      std::cout
-          << std::chrono::duration_cast<std::chrono::milliseconds>(end - start)
-                 .count()
-          << " ms per loop (excluding rendering)"
-          << "\r" << std::flush;
+      const auto durationMs =
+          std::chrono::duration_cast<std::chrono::milliseconds>(end - start)
+              .count();
+      std::cout << durationMs << " ms per loop (excluding rendering)"
+                << "\r" << std::flush;
       tree.updateAndRenderChildren(wRender);
       SDL_RenderPresent(wRender);
       while (SDL_PollEvent(&e)) {
@@ -80,7 +78,7 @@ int main() {
           quit = true;
         }
       }
-      SDL_Delay(16);
+      SDL_Delay(std::max(16.0 - durationMs, 0.0));
       SDL_SetRenderDrawColor(wRender, 0, 0, 0, 0);
       SDL_RenderClear(wRender);
     }
