@@ -34,7 +34,6 @@ struct Body {
   Vec<double> vel;
   Vec<double> acc;
   double mass;
-  double halfWidth;
 };
 
 inline std::ostream& operator<<(std::ostream& os, const Body& point) {
@@ -62,7 +61,7 @@ inline std::vector<Body> generateRotatingDisk(int num) {
   for (auto& body : bodies) {
     body = generatePointReg(0, 0, 100);
     const auto r = sqrt(body.pos[0] * body.pos[0] + body.pos[1] * body.pos[1]);
-    const auto v = 1/6.28 * sqrt(num / r);
+    const auto v = 1/6.28 * sqrt(num / r); // Things seem to work better with the 6.28?
     body.vel[0] = -v * body.pos[1] / r;
     body.vel[1] = v * body.pos[0] / r;
   }

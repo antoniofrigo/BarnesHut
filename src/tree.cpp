@@ -20,12 +20,13 @@ void Tree::updateAndRenderChildren(SDL_Renderer* wRender) {
 }
 
 bool Tree::insert(Body* body) {
+  // Do nothing if the body's coordinates are not within the quad
   if (!isValid(*body)) {
     return false;
   }
-  count += 1;
-  body->halfWidth = quad_.dimension;
+  count_ += 1;
 
+  // Update center of mass
   cm = cm * totalMass + body->pos * body->mass;
   totalMass += body->mass;
   cm = cm / totalMass;
@@ -56,7 +57,7 @@ bool Tree::insert(Body* body) {
     body_ = nullptr;
   }
 
-  // Place new one
+  // Place the new body
   bool newResult = false;
   for (auto& child : children_) {
     if (child->isValid(*body)) {
@@ -64,5 +65,6 @@ bool Tree::insert(Body* body) {
     }
   }
 
+  // Return whether or not everything worked
   return oldResult & newResult;
 }

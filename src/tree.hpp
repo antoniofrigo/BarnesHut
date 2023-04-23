@@ -1,6 +1,6 @@
 #pragma once
 #include "body.hpp"
-#include "types.hpp"
+#include "quad.hpp"
 #include "vec.hpp"
 #include <algorithm>
 #include <array>
@@ -14,7 +14,7 @@ struct Tree {
         isLeaf_(true),
         cm(0.0, 0.0),
         totalMass(0.0),
-        count(0) {}
+        count_(0) {}
 
   bool isValid(const Body& body);
   bool insert(Body* body);
@@ -27,7 +27,7 @@ struct Tree {
   bool isLeaf_;
   Vec<double> cm;
   double totalMass;
-  int count;
+  int count_;
 
   std::vector<std::unique_ptr<Tree>> children_;
 };

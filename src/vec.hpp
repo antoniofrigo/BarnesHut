@@ -2,6 +2,8 @@
 #include <iostream>
 #include <ostream>
 
+// Nice vector class that (naively) implements
+// some of the NumPy array operations
 template <typename T_DATA>
 struct Vec {
   Vec() {}
