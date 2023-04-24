@@ -1,6 +1,7 @@
 #include "body.hpp"
-#include "tree.hpp"
+#include "config.hpp"
 #include "quad.hpp"
+#include "tree.hpp"
 #include <SDL2/SDL.h>
 #include <algorithm>
 #include <chrono>
@@ -8,12 +9,13 @@
 #include <fstream>
 #include <iostream>
 #include <memory>
+#include <string>
 #include <vector>
+
+static Config config;
 
 constexpr int SCREEN_WIDTH = 700;
 constexpr int SCREEN_HEIGHT = 700;
-constexpr double THETA = 1;
-constexpr double G = 1;
 
 // Recusively traverse the tree and update the acceleration for a given body
 void traverseAndUpdateAcc(Tree* q, Body* body) {
@@ -28,10 +30,10 @@ void traverseAndUpdateAcc(Tree* q, Body* body) {
   const auto y = q->cm[1] - body->pos[1];
   const auto r = std::max(sqrt(x * x + y * y), 1.0);
   const auto theta = 2 * q->quad_.dimension / r;
-  // Update only if the center of mass satisifies the 
-  // theta criteria or it is a leaf node with a body 
-  if (theta <= THETA || (q->isLeaf_ && q->body_ != nullptr)) {
-    const auto a = G * q->totalMass / (r * r);
+  // Update only if the center of mass satisifies the
+  // theta criteria or it is a leaf node with a body
+  if (theta <= config.THETA || (q->isLeaf_ && q->body_ != nullptr)) {
+    const auto a = config.G * q->totalMass / (r * r);
     const auto cos_theta = x / r;
     const auto sin_theta = y / r;
     body->acc[0] += a * cos_theta;
@@ -44,10 +46,24 @@ void traverseAndUpdateAcc(Tree* q, Body* body) {
   }
 }
 
-int main() {
+int main(int argc, const char* argv[]) {
+  if (argc < 4) {
+    std::cout
+        << "Not enough arguments. THETA = [0, infinity), NUM = [1, infinity)]"
+        << std::endl;
+    return 0;
+  }
+  
+  config.G = 1;
+  config.THETA = std::stoi(argv[1]);
+  config.NUM_BODIES = std::stoi(argv[2]);
+  config.DT = std::stod(argv[3]);
+
+  const auto numBodies = std::stoi(argv[2]);
+
   // Initialize initial conditions
   auto quad = Quad(0, 0, 300.0);
-  auto bodies = generateRotatingDisk(10000);
+  auto bodies = generateRotatingDisk(numBodies, config.DT);
 
   if (SDL_Init(SDL_INIT_VIDEO) < 0) {
     std::cout << "SDL not working..." << SDL_GetError() << std::endl;

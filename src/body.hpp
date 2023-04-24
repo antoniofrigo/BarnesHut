@@ -7,8 +7,12 @@
 
 struct Body {
   Body() {}
-  Body(const double x, const double y, const double dx, const double dy)
-      : pos(x, y), vel(dx, dy), acc(0.0, 0.0), mass(1.0) {}
+  Body(const double x,
+       const double y,
+       const double dx,
+       const double dy,
+       const double dt_)
+      : pos(x, y), vel(dx, dy), acc(0.0, 0.0), mass(1.0), dt(dt_) {}
 
   inline void draw(SDL_Renderer* wRender, const double maxDim) const {
     SDL_Rect r;
@@ -20,7 +24,6 @@ struct Body {
   }
 
   inline void update() {
-    const auto dt = 0.1;
     pos += vel * dt + acc * dt * dt * 0.5;
     vel += acc * dt;
   }
@@ -34,6 +37,7 @@ struct Body {
   Vec<double> vel;
   Vec<double> acc;
   double mass;
+  double dt;
 };
 
 inline std::ostream& operator<<(std::ostream& os, const Body& point) {
@@ -45,7 +49,8 @@ inline std::ostream& operator<<(std::ostream& os, const Body& point) {
 
 inline Body generatePointReg(const double x,
                              const double y,
-                             const double maxR) {
+                             const double maxR,
+                             const double dt) {
   std::random_device rd{};
   std::mt19937 gen{rd()};
 
@@ -53,15 +58,16 @@ inline Body generatePointReg(const double x,
   std::uniform_real_distribution<> tDist{0, 2 * 6.28};
   const auto r = rDist(gen);
   const auto theta = tDist(gen);
-  return Body(x + r * cos(theta), y + r * sin(theta), 0, 0);
+  return Body(x + r * cos(theta), y + r * sin(theta), 0, 0, dt);
 }
 
-inline std::vector<Body> generateRotatingDisk(int num) {
+inline std::vector<Body> generateRotatingDisk(int num, const double dt) {
   auto bodies = std::vector<Body>(num);
   for (auto& body : bodies) {
-    body = generatePointReg(0, 0, 100);
+    body = generatePointReg(0, 0, 100, dt);
     const auto r = sqrt(body.pos[0] * body.pos[0] + body.pos[1] * body.pos[1]);
-    const auto v = 1/6.28 * sqrt(num / r); // Things seem to work better with the 6.28?
+    const auto v =
+        1 / 6.28 * sqrt(num / r); // Things seem to work better with the 6.28?
     body.vel[0] = -v * body.pos[1] / r;
     body.vel[1] = v * body.pos[0] / r;
   }

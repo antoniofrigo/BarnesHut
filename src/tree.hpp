@@ -1,5 +1,6 @@
 #pragma once
 #include "body.hpp"
+#include "config.hpp"
 #include "quad.hpp"
 #include "vec.hpp"
 #include <algorithm>
