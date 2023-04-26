@@ -50,7 +50,13 @@ void traverseAndUpdateAcc(Tree* q, Body* body) {
 int main(int argc, const char* argv[]) {
   if (argc < 4) {
     std::cout
-        << "Not enough arguments. THETA = [0, infinity), NUM = [1, infinity)]"
+        << "Not enough arguments. THETA = [0, infinity), NUM = [1, infinity), TIMESTEP = [0, infinity)]"
+        << std::endl;
+    std::cout
+        << "A reasonable simulatation may be"
+        << std::endl;
+    std::cout
+        << "\tbarneshut 0.3 1000 0.1"
         << std::endl;
     return 0;
   }
@@ -82,6 +88,7 @@ int main(int argc, const char* argv[]) {
       traverseAndUpdateAcc(&tree, &p);
     }
 
+    // Find the sum of the differences
     double sumDiff = 0.0;
     for (size_t i = 0; i < bodies.size(); ++i) {
       const auto diff = bodies[i].acc - naive.bodies_[i].acc;

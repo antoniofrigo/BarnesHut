@@ -25,6 +25,7 @@ struct Quad {
     dimension = dimension_;
   }
 
+  // Draw bounding box on window
   inline void draw(SDL_Renderer* wRender, const double maxDim) const {
     for (int i = 0; i < 4; ++i) {
       const auto& d1 = DIRECTIONS[i];
@@ -37,11 +38,13 @@ struct Quad {
     }
   }
 
+  // Check body is within quad
   inline bool isWithinQuad(const Body& body) const {
     return (abs(body.pos[0] - center[0]) <= dimension) &&
            (abs(body.pos[1] - center[1]) <= dimension);
   }
 
+  // Generate subquad 
   inline Quad getQuad(const Quadrant& q) const {
     switch (q) {
     case Quadrant::NE:
