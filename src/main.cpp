@@ -30,7 +30,7 @@ void traverseAndUpdateAcc(Tree* q, Body* body) {
   const auto x = q->cm[0] - body->pos[0];
   const auto y = q->cm[1] - body->pos[1];
   const auto r = std::max(sqrt(x * x + y * y), 1.0);
-  const auto theta = 2 * q->quad_.dimension / r;
+  const auto theta = 2.0 * q->quad_.dimension / r;
   // Update only if the center of mass satisifies the
   // theta criteria or it is a leaf node with a body
   if (theta <= config.THETA || (q->isLeaf_ && q->body_ != nullptr)) {
@@ -76,22 +76,18 @@ int main(int argc, const char* argv[]) {
       tree.insert(&p);
     }
 
-    // Update the forces
+    // Update the forces in the tree
     for (auto& p : bodies) {
       p.resetAcc();
       traverseAndUpdateAcc(&tree, &p);
     }
 
-
-    Vec sumTreeAcc = Vec<double>(0,0,0);
-    Vec sumNaiveAcc = Vec<double>(0,0,0);
+    double sumDiff = 0.0;
     for (size_t i = 0; i < bodies.size(); ++i) {
-      sumTreeAcc += bodies[i].acc;
-      sumNaiveAcc += naive.bodies_[i].acc;
+      const auto diff = bodies[i].acc - naive.bodies_[i].acc;
+      sumDiff += abs(diff[0]) + abs(diff[1]);
     }
-    std::cout << "Verification of forces:" << std::endl;
-    std::cout << "Tree Acceleration " << sumTreeAcc << std::endl;
-    std::cout << "Naive Acceleration " << sumNaiveAcc << std::endl;
+    std::cout << "Verification of forces: " << sumDiff << std::endl;
   }
 
   if (SDL_Init(SDL_INIT_VIDEO) < 0) {

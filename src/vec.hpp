@@ -33,7 +33,7 @@ struct Vec {
 
   inline Vec& operator-=(const Vec& other) {
     data[0] -= other.data[0];
-    data[1] -= other.data[2];
+    data[1] -= other.data[1];
     data[2] -= other.data[2];
     return *this;
   }
