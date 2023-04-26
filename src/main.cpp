@@ -1,5 +1,6 @@
 #include "body.hpp"
 #include "config.hpp"
+#include "naive.hpp"
 #include "quad.hpp"
 #include "tree.hpp"
 #include <SDL2/SDL.h>
@@ -53,17 +54,45 @@ int main(int argc, const char* argv[]) {
         << std::endl;
     return 0;
   }
-  
+
   config.G = 1;
   config.THETA = std::stoi(argv[1]);
   config.NUM_BODIES = std::stoi(argv[2]);
   config.DT = std::stod(argv[3]);
 
-  const auto numBodies = std::stoi(argv[2]);
-
   // Initialize initial conditions
   auto quad = Quad(0, 0, 300.0);
-  auto bodies = generateRotatingDisk(numBodies, config.DT);
+  auto bodies = generateRotatingDisk(config.NUM_BODIES, config.DT);
+
+  // Compare the force updates with the Naive N-Body
+  {
+    // Create IDS
+    auto bodies = generateRotatingDisk(config.NUM_BODIES, config.DT);
+    auto naive = NaiveNBody(bodies); // Copy bodies
+    naive.updateForces(config.G);
+
+    auto tree = Tree(quad);
+    for (auto& p : bodies) {
+      tree.insert(&p);
+    }
+
+    // Update the forces
+    for (auto& p : bodies) {
+      p.resetAcc();
+      traverseAndUpdateAcc(&tree, &p);
+    }
+
+
+    Vec sumTreeAcc = Vec<double>(0,0,0);
+    Vec sumNaiveAcc = Vec<double>(0,0,0);
+    for (size_t i = 0; i < bodies.size(); ++i) {
+      sumTreeAcc += bodies[i].acc;
+      sumNaiveAcc += naive.bodies_[i].acc;
+    }
+    std::cout << "Verification of forces:" << std::endl;
+    std::cout << "Tree Acceleration " << sumTreeAcc << std::endl;
+    std::cout << "Naive Acceleration " << sumNaiveAcc << std::endl;
+  }
 
   if (SDL_Init(SDL_INIT_VIDEO) < 0) {
     std::cout << "SDL not working..." << SDL_GetError() << std::endl;
