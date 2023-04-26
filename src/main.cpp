@@ -49,20 +49,16 @@ void traverseAndUpdateAcc(Tree* q, Body* body) {
 
 int main(int argc, const char* argv[]) {
   if (argc < 4) {
-    std::cout
-        << "Not enough arguments. THETA = [0, infinity), NUM = [1, infinity), TIMESTEP = [0, infinity)]"
-        << std::endl;
-    std::cout
-        << "A reasonable simulatation may be"
-        << std::endl;
-    std::cout
-        << "\tbarneshut 0.3 1000 0.1"
-        << std::endl;
+    std::cout << "Not enough arguments. THETA = [0, infinity), NUM = [1, "
+                 "infinity), TIMESTEP = [0, infinity)]"
+              << std::endl;
+    std::cout << "A reasonable simulatation may be" << std::endl;
+    std::cout << "\tbarneshut 0.3 1000 0.1" << std::endl;
     return 0;
   }
 
   config.G = 1;
-  config.THETA = std::stoi(argv[1]);
+  config.THETA = std::stod(argv[1]);
   config.NUM_BODIES = std::stoi(argv[2]);
   config.DT = std::stod(argv[3]);
 
@@ -70,13 +66,15 @@ int main(int argc, const char* argv[]) {
   auto quad = Quad(0, 0, 300.0);
   auto bodies = generateRotatingDisk(config.NUM_BODIES, config.DT);
 
-  // Compare the force updates with the Naive N-Body
-  {
-    // Create IDS
+  // Compare the force updates with the Naive N-Body and verify
+  // Only run on small numbers
+  if (config.NUM_BODIES <= 10000){
+    // Create Naive simulation
     auto bodies = generateRotatingDisk(config.NUM_BODIES, config.DT);
     auto naive = NaiveNBody(bodies); // Copy bodies
     naive.updateForces(config.G);
 
+    // Create Barnes-Hut tree
     auto tree = Tree(quad);
     for (auto& p : bodies) {
       tree.insert(&p);
@@ -94,8 +92,19 @@ int main(int argc, const char* argv[]) {
       const auto diff = bodies[i].acc - naive.bodies_[i].acc;
       sumDiff += abs(diff[0]) + abs(diff[1]);
     }
-    std::cout << "Verification of forces: " << sumDiff << std::endl;
+    std::cout << "Theta = " << config.THETA
+              << ", Sum of difference between Naive and Barnes-Hut: " << sumDiff
+              << std::endl;
   }
+
+  std::ofstream frameTimes;
+  auto thetaStr =  std::to_string(config.THETA);
+  thetaStr = thetaStr.replace(thetaStr.find("."), 1, "_");
+  frameTimes.open("theta_" + thetaStr + "_num_" + std::to_string(config.NUM_BODIES) +
+                  "_frame_times.txt");
+  frameTimes << "THETA = " << std::to_string(config.THETA) << std::endl;
+  frameTimes << "NUM_BODIES = " << config.NUM_BODIES << std::endl;
+  frameTimes << "DT = " << config.DT << std::endl;
 
   if (SDL_Init(SDL_INIT_VIDEO) < 0) {
     std::cout << "SDL not working..." << SDL_GetError() << std::endl;
@@ -109,6 +118,7 @@ int main(int argc, const char* argv[]) {
     SDL_Event e;
 
     // Main loop
+    int frame = 0;
     while (!quit) {
       const auto start = std::chrono::system_clock::now();
 
@@ -132,7 +142,9 @@ int main(int argc, const char* argv[]) {
       const auto durationMs =
           std::chrono::duration_cast<std::chrono::milliseconds>(end - start)
               .count();
-      std::cout << durationMs << " ms per loop (excluding rendering)"
+      frameTimes << frame << ", " << durationMs << std::endl;
+      std::cout << "Frame " << frame << " " << durationMs
+                << " ms per loop (excluding rendering)"
                 << "\r" << std::flush;
       SDL_RenderPresent(wRender);
 
@@ -148,6 +160,8 @@ int main(int argc, const char* argv[]) {
       // Clear the window
       SDL_SetRenderDrawColor(wRender, 0, 0, 0, 0);
       SDL_RenderClear(wRender);
+      frame++;
     }
   }
+  frameTimes.close();
 }
