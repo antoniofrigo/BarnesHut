@@ -5,4 +5,5 @@ struct Config {
   double G;
   double DT;
   int NUM_BODIES;
+  bool SAVE_FRAMES;
 };

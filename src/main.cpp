@@ -54,6 +54,8 @@ int main(int argc, const char* argv[]) {
               << std::endl;
     std::cout << "A reasonable simulatation may be" << std::endl;
     std::cout << "\tbarneshut 0.3 1000 0.1" << std::endl;
+    std::cout << "To also save the frame times, use" << std::endl;
+    std::cout << "\tbarneshut 0.3 1000 0.1 --frames" << std::endl;
     return 0;
   }
 
@@ -61,6 +63,7 @@ int main(int argc, const char* argv[]) {
   config.THETA = std::stod(argv[1]);
   config.NUM_BODIES = std::stoi(argv[2]);
   config.DT = std::stod(argv[3]);
+  config.SAVE_FRAMES = (argc == 5 && (argv[4] == std::string("--frames")));
 
   // Initialize initial conditions
   auto quad = Quad(0, 0, 300.0);
@@ -98,13 +101,15 @@ int main(int argc, const char* argv[]) {
   }
 
   std::ofstream frameTimes;
-  auto thetaStr =  std::to_string(config.THETA);
-  thetaStr = thetaStr.replace(thetaStr.find("."), 1, "_");
-  frameTimes.open("theta_" + thetaStr + "_num_" + std::to_string(config.NUM_BODIES) +
-                  "_frame_times.txt");
-  frameTimes << "THETA = " << std::to_string(config.THETA) << std::endl;
-  frameTimes << "NUM_BODIES = " << config.NUM_BODIES << std::endl;
-  frameTimes << "DT = " << config.DT << std::endl;
+  if (config.SAVE_FRAMES) {
+    auto thetaStr =  std::to_string(config.THETA);
+    thetaStr = thetaStr.replace(thetaStr.find("."), 1, "_");
+    frameTimes.open("theta_" + thetaStr + "_num_" + std::to_string(config.NUM_BODIES) +
+                    "_frame_times.txt");
+    frameTimes << "THETA = " << std::to_string(config.THETA) << std::endl;
+    frameTimes << "NUM_BODIES = " << config.NUM_BODIES << std::endl;
+    frameTimes << "DT = " << config.DT << std::endl;
+  }
 
   if (SDL_Init(SDL_INIT_VIDEO) < 0) {
     std::cout << "SDL not working..." << SDL_GetError() << std::endl;
