@@ -100,6 +100,7 @@ int main(int argc, const char* argv[]) {
               << std::endl;
   }
 
+  // Save frames
   std::ofstream frameTimes;
   if (config.SAVE_FRAMES) {
     auto thetaStr =  std::to_string(config.THETA);

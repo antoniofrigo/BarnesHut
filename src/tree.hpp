@@ -20,7 +20,6 @@ struct Tree {
   bool isValid(const Body& body);
   bool insert(Body* body);
 
-  void getCMWithoutBody(const Body& body);
   void updateAndRenderChildren(SDL_Renderer* wRender);
 
   Quad quad_;
