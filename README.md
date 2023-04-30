@@ -1,6 +1,5 @@
 # Barnes-Hut
 
-
 ## Installation instructions
 
 The SDL2 library is used for rendering the final result. On Debian

@@ -5,6 +5,7 @@
 #include <ostream>
 #include <random>
 
+// Body with mass 1
 struct Body {
   Body() {}
   Body(const double x,

@@ -19,6 +19,7 @@ enum class Quadrant {
 const auto DIRECTIONS =
     std::vector<std::pair<int, int>>{{-1, -1}, {-1, 1}, {1, 1}, {1, -1}};
 
+// Maintains information relating to a quadrant
 struct Quad {
   Quad(const double& x, const double& y, const double& dimension_) {
     center = Vec<double>(x, y);
@@ -67,7 +68,6 @@ struct Quad {
   }
 
   Vec<double> center;
-  // std::pair<double, double> center;
   double dimension;
 };
 
