@@ -15,7 +15,7 @@ struct NaiveNBody {
         if (&p != &q) {
           const auto x = q.pos[0] - p.pos[0];
           const auto y = q.pos[1] - p.pos[1];
-          const auto r = std::max(sqrt(x * x + y * y), 0.1);
+          const auto r = std::max(sqrt(x * x + y * y), 1.0);
           const auto a = G * q.mass / (r * r);
           const auto cos_theta = x / r;
           const auto sin_theta = y / r;
