@@ -24,7 +24,7 @@ struct Body {
   }
 
   inline void update() {
-    pos += vel * dt + acc * dt * dt * 0.5;
+    pos += vel * dt;
     vel += acc * dt;
   }
 
